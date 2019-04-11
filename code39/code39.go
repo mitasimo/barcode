@@ -8,13 +8,13 @@ import (
 	"unicode/utf8"
 )
 
-// Barcode39 specialize Barcode
-type Barcode39 struct {
+// Barcode is the specialization of the barcode.Barcode for code39
+type Barcode struct {
 	*barcode.Barcode
 }
 
-// NewBarcode create code39 image
-func NewBarcode(data string, width, heigth int) (*Barcode39, error) {
+// New create new Barcode
+func New(data string, width, heigth int) (*Barcode, error) {
 	const minWidth = 1
 
 	data = strings.Join([]string{"*", data, "*"}, "") // add start and stop symbols
@@ -27,7 +27,7 @@ func NewBarcode(data string, width, heigth int) (*Barcode39, error) {
 	barcodeWidth := totalNarrow * minWidth
 
 	if narrowWidth < minWidth {
-		return nil, fmt.Errorf("can't draw a %d character barcode in a %d pixel wide image, need minimum %d pixels", numRunes, width, barcodeWidth)
+		return nil, fmt.Errorf("can't draw a %d characters barcode in a %d pixels wide image, need minimum %d pixels", numRunes, width, barcodeWidth)
 	}
 
 	bc := barcode.New(width, heigth)
@@ -35,9 +35,9 @@ func NewBarcode(data string, width, heigth int) (*Barcode39, error) {
 	offset := (width - barcodeWidth) / 2
 	for _, curRune := range data {
 		isBar := true // starts with black bar
-		curPattern, ok := patterns39[curRune]
+		curPattern, ok := patterns[curRune]
 		if !ok {
-			return nil, fmt.Errorf("unsupported character in data: %q", curRune)
+			return nil, fmt.Errorf("unsupported character in data: %s", string(curRune))
 		}
 		for _, moduleType := range curPattern {
 			var curWidth int
@@ -54,7 +54,7 @@ func NewBarcode(data string, width, heigth int) (*Barcode39, error) {
 		}
 		offset += narrowWidth // add offset between 2 symbols
 	}
-	return &Barcode39{Barcode: bc}, nil
+	return &Barcode{Barcode: bc}, nil
 }
 
 const (
@@ -63,7 +63,7 @@ const (
 )
 
 var (
-	patterns39         map[rune]string
+	patterns           map[rune]string
 	wideRatio          int // narrow bars per wide bar
 	totalNarrowPerSymb int // symbols width in narrow bars
 )
@@ -78,7 +78,7 @@ func isNarrowModule(modType rune) bool {
 // SetWideRatio set the default wide ratio
 func SetWideRatio(r int) error {
 	if r < 2 {
-		return errors.New("wide ratio must be equal or grather then 2")
+		return errors.New("wide ratio should be equal or grather then 2")
 	}
 	wideRatio = r
 	totalNarrowPerSymb = narrowPerSymb + widePerSymb*wideRatio
@@ -90,7 +90,7 @@ func init() {
 	wideRatio = 3
 	totalNarrowPerSymb = narrowPerSymb + widePerSymb*wideRatio
 
-	patterns39 = map[rune]string{
+	patterns = map[rune]string{
 		'1': "wnnwnnnnw", // w - wide bar, n - narrow bar
 		'2': "nnwwnnnnw",
 		'3': "wnwwnnnnn",

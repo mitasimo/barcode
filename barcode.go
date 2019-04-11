@@ -17,7 +17,7 @@ type Barcode struct {
 	modules       []module // only bar module
 }
 
-// AddModule - add new bar module to Barcode
+// AddModule - add new bar module to the Barcode
 func (b *Barcode) AddModule(begin, end int) error {
 	if begin >= b.width {
 		return fmt.Errorf("Module begin (%d) grather then barcode width (%d)", begin, b.width)
