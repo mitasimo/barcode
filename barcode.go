@@ -1,6 +1,7 @@
 package barcode
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 )
@@ -10,15 +11,26 @@ func New(width, heigth int) *Barcode {
 	return &Barcode{width: width, heigth: heigth}
 }
 
-// Barcode consist of data to draw image of 2D barcode
+// Barcode contains data to draw image of 2D barcode
 type Barcode struct {
 	width, heigth int      // image size
 	modules       []module // only bar module
 }
 
 // AddModule - add new bar module to Barcode
-func (b *Barcode) AddModule(begin, end int) {
+func (b *Barcode) AddModule(begin, end int) error {
+	if begin >= b.width {
+		return fmt.Errorf("Module begin (%d) grather then barcode width (%d)", begin, b.width)
+	}
+	if end >= b.width {
+		return fmt.Errorf("Module end (%d) grather then barcode width (%d)", end, b.width)
+	}
+	if begin >= end {
+		return fmt.Errorf("Module begin (%d) grather then module end (%d)", begin, end)
+	}
 	b.modules = append(b.modules, module{begin, end})
+
+	return nil
 }
 
 // ColorModel is the implementation of the function interface image.Image
