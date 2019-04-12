@@ -3,9 +3,10 @@ package code39
 import (
 	"errors"
 	"fmt"
-	"simd/barcode"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/mitasimo/barcode"
 )
 
 // Barcode is the specialization of the barcode.Barcode for code39
