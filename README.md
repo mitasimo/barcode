@@ -1,7 +1,7 @@
 Barcode
 ========
 
-Package for Golang is designed to generate bar codes. 
+Library for Go language to generate barcode images
 
 Supported barcode type
 ----------------------
